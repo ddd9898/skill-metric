@@ -1,6 +1,6 @@
 ## Skill Metric — Static Quality Evaluation for Skills
 
-`skills/skill-metric` is a utility skill that runs **static quality checks** on agent skills.  
+`skill-metric` is a utility skill that runs **static quality checks** on agent skills.  
 It scores each target skill directory on three dimensions:
 
 - **2.1.1 Format**
@@ -9,7 +9,7 @@ It scores each target skill directory on three dimensions:
 
 Each dimension has a maximum of **8 points**, for a total of **24 points**, and the tool supports **text reports, JSON, CSV, and radar charts** (for a single skill).
 
-The main implementation script lives at `skills/skill-metric/scripts/skill_quality_eval.py`.
+The main implementation script lives at `skill-metric/scripts/skill_quality_eval.py`.
 
 ---
 
@@ -33,10 +33,10 @@ The main implementation script lives at `skills/skill-metric/scripts/skill_quali
 
 ## CLI Usage
 
-Use the script under `skills/skill-metric/scripts/skill_quality_eval.py`:
+Use the script under `skill-metric/scripts/skill_quality_eval.py`:
 
 ```bash
-python skills/skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_path ...] [options]
+python skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_path ...] [options]
 ```
 
 ### Positional arguments
@@ -62,36 +62,36 @@ python skills/skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_pat
 
 ```bash
 # Score a single skill with a full verbose report
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database
 
 # Score a single skill and print only the total score
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -q
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -q
 
 # Score a single skill and generate a radar chart (default <skill_name>_radar.png)
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure
 
 # Score a single skill and save the radar chart to a custom file
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure report/radar.png
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure report/radar.png
 
 # Batch‑score all skills under skills/
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/
+python skill-metric/scripts/skill_quality_eval.py skills/*/
 
 # Batch‑score and write CSV to a file
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ --csv skill_scores.csv
+python skill-metric/scripts/skill_quality_eval.py skills/*/ --csv skill_scores.csv
 
 # Batch‑score and emit CSV to stdout (can be redirected)
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ --csv > report.csv
+python skill-metric/scripts/skill_quality_eval.py skills/*/ --csv > report.csv
 
 # JSON output
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -j
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ -j
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -j
+python skill-metric/scripts/skill_quality_eval.py skills/*/ -j
 ```
 
 ---
 
 ## Scoring Overview (24 Points Total)
 
-For full details see `skills/skill-metric/references/scoring_criteria.md`.  
+For full details see `skill-metric/references/scoring_criteria.md`.  
 This section summarizes the rubric:
 
 | Dimension | What is checked (summary) | Max |
@@ -141,7 +141,7 @@ import subprocess
 # Batch‑score all skills and write CSV
 skill_dirs = sorted(glob.glob("skills/*/"))
 subprocess.run(
-    ["python", "skills/skill-metric/scripts/skill_quality_eval.py"]
+    ["python", "skill-metric/scripts/skill_quality_eval.py"]
     + skill_dirs
     + ["--csv", "skill_scores.csv"],
     check=True,
@@ -149,7 +149,7 @@ subprocess.run(
 
 # Score a single skill and parse JSON output
 result = subprocess.run(
-    ["python", "skills/skill-metric/scripts/skill_quality_eval.py",
+    ["python", "skill-metric/scripts/skill_quality_eval.py",
      "skills/uniprot-database", "-j"],
     capture_output=True, text=True, check=True,
 )
@@ -157,7 +157,7 @@ data = json.loads(result.stdout)
 print(data["total_score"])
 ```
 
-For more Python examples and a precise description of all fields, see `skills/skill-metric/references/scoring_criteria.md`.
+For more Python examples and a precise description of all fields, see `skill-metric/references/scoring_criteria.md`.
 
 ---
 

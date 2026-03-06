@@ -1,6 +1,6 @@
 # Skill Metric — Skill 质量评价工具
 
-`skills/skill-metric` 是一个对 Agent Skill 做**静态质量评价**的工具 Skill，会对指定的 skill 目录打出三项得分：
+`skill-metric` 是一个对 Agent Skill 做**静态质量评价**的工具 Skill，会对指定的 skill 目录打出三项得分：
 
 - **2.1.1 Format**（格式）
 - **2.1.2 Completeness**（完整性）
@@ -8,7 +8,7 @@
 
 三项分别满分 8 分，总分最高 **24 分**，并支持 **文本报告、JSON、CSV 以及单 skill 雷达图** 输出。
 
-底层实现脚本位于 `skills/skill-metric/scripts/skill_quality_eval.py`。
+底层实现脚本位于 `skill-metric/scripts/skill_quality_eval.py`。
 
 ---
 
@@ -32,10 +32,10 @@
 
 ## 命令行用法
 
-推荐通过 `skills/skill-metric/scripts/skill_quality_eval.py` 调用：
+推荐通过 `skill-metric/scripts/skill_quality_eval.py` 调用：
 
 ```bash
-python skills/skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_path ...] [选项]
+python skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_path ...] [选项]
 ```
 
 ### 参数
@@ -61,36 +61,36 @@ python skills/skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_pat
 
 ```bash
 # 评价单个 skill，打印完整报告
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database
 
 # 评价单个 skill，只显示总分
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -q
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -q
 
 # 评价单个 skill 并生成雷达图（默认保存为 <skill_name>_radar.png）
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure
 
 # 评价单个 skill 并指定雷达图输出路径
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure report/radar.png
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure report/radar.png
 
 # 批量评价 skills 目录下所有 skill
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/
+python skill-metric/scripts/skill_quality_eval.py skills/*/
 
 # 批量评价并输出 CSV（写入文件）
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ --csv skill_scores.csv
+python skill-metric/scripts/skill_quality_eval.py skills/*/ --csv skill_scores.csv
 
 # 批量评价并输出 CSV 到 stdout（可重定向）
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ --csv > report.csv
+python skill-metric/scripts/skill_quality_eval.py skills/*/ --csv > report.csv
 
 # 输出 JSON
-python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -j
-python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ -j
+python skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -j
+python skill-metric/scripts/skill_quality_eval.py skills/*/ -j
 ```
 
 ---
 
 ## 评分体系总览（24 分）
 
-完整评分细则见 `skills/skill-metric/references/scoring_criteria.md`，这里给出总览：
+完整评分细则见 `skill-metric/references/scoring_criteria.md`，这里给出总览：
 
 | 维度 | 检查内容（摘要） | 满分 |
 |------|------------------|------|
@@ -137,7 +137,7 @@ import subprocess
 # 批量评分，输出 CSV
 skill_dirs = sorted(glob.glob("skills/*/"))
 subprocess.run(
-    ["python", "skills/skill-metric/scripts/skill_quality_eval.py"]
+    ["python", "skill-metric/scripts/skill_quality_eval.py"]
     + skill_dirs
     + ["--csv", "skill_scores.csv"],
     check=True,
@@ -145,7 +145,7 @@ subprocess.run(
 
 # 单个 skill，解析 JSON 结果
 result = subprocess.run(
-    ["python", "skills/skill-metric/scripts/skill_quality_eval.py",
+    ["python", "skill-metric/scripts/skill_quality_eval.py",
      "skills/uniprot-database", "-j"],
     capture_output=True, text=True, check=True,
 )
@@ -153,7 +153,7 @@ data = json.loads(result.stdout)
 print(data["total_score"])
 ```
 
-更多 Python 调用示例和输出字段定义可参考 `skills/skill-metric/references/scoring_criteria.md`。
+更多 Python 调用示例和输出字段定义可参考 `skill-metric/references/scoring_criteria.md`。
 
 ---
 
