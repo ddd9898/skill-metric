@@ -1,140 +1,144 @@
-# Skill Metric — Skill 质量评价工具
+## Skill Metric — Static Quality Evaluation for Skills
 
-`skills/skill-metric` 是一个对 Agent Skill 做**静态质量评价**的工具 Skill，会对指定的 skill 目录打出三项得分：
+`skills/skill-metric` is a utility skill that runs **static quality checks** on agent skills.  
+It scores each target skill directory on three dimensions:
 
-- **2.1.1 Format**（格式）
-- **2.1.2 Completeness**（完整性）
-- **2.1.3 Writing**（写作）
+- **2.1.1 Format**
+- **2.1.2 Completeness**
+- **2.1.3 Writing**
 
-三项分别满分 8 分，总分最高 **24 分**，并支持 **文本报告、JSON、CSV 以及单 skill 雷达图** 输出。
+Each dimension has a maximum of **8 points**, for a total of **24 points**, and the tool supports **text reports, JSON, CSV, and radar charts** (for a single skill).
 
-底层实现脚本位于 `skills/skill-metric/scripts/skill_quality_eval.py`。
-
----
-
-## 适用场景
-
-- **批量检查 skills 质量**：对 `skills/` 目录下的一批 skills 做体检，找出格式或内容不达标的技能。
-- **单个 skill 质量审计**：想要给某个 skill 做 Format / Completeness / Writing 的详细打分与说明。
-- **导出结构化结果**：需要把结果导出成 **CSV 或 JSON**，用于统计、可视化或后续自动处理。
-- **生成雷达图报告**：对单个 skill 生成 Format/Completeness/Writing 三维的雷达图，方便展示或写报告。
+The main implementation script lives at `skills/skill-metric/scripts/skill_quality_eval.py`.
 
 ---
 
-## 依赖
+## When to Use This Tool
 
-- **Python**：推荐 Python 3.10+。
-- **第三方库**：
-  - 基础打分逻辑只依赖标准库。
-  - 使用 `--figure` 生成雷达图时需安装：`pip install matplotlib`。
+- **Batch quality audit**: Run a health check on all skills under `skills/` to detect format or content issues.
+- **Deep-dive on a single skill**: Get detailed Format / Completeness / Writing scores plus per-check explanations.
+- **Export for analysis**: Export scores as **CSV** or **JSON** for dashboards, BI tools, or further processing.
+- **Generate radar charts**: For a single skill, create a radar chart over the three dimensions for reports or slide decks.
 
 ---
 
-## 命令行用法
+## Dependencies
 
-推荐通过 `skills/skill-metric/scripts/skill_quality_eval.py` 调用：
+- **Python**: Python 3.10+ is recommended.
+- **Third‑party libraries**:
+  - Core scoring logic uses only the standard library.
+  - Radar chart generation via `--figure` requires: `pip install matplotlib`.
+
+---
+
+## CLI Usage
+
+Use the script under `skills/skill-metric/scripts/skill_quality_eval.py`:
 
 ```bash
-python skills/skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_path ...] [选项]
+python skills/skill-metric/scripts/skill_quality_eval.py <skill_path> [skill_path ...] [options]
 ```
 
-### 参数
+### Positional arguments
 
-| 参数 | 说明 |
-|------|------|
-| `skill_path` | 一个或多个 skill 目录路径，或对应的 `SKILL.md` 路径。例如：`skills/uniprot-database` 或 `skills/uniprot-database/SKILL.md` |
+| Argument | Description |
+|----------|-------------|
+| `skill_path` | One or more skill directory paths, or a path to the corresponding `SKILL.md`. Examples: `skills/uniprot-database` or `skills/uniprot-database/SKILL.md`. |
 
-**注意**：路径必须指向「skill 目录」或该目录下的 `SKILL.md`，不要把 `skills/` 父目录本身当作一个 skill 传入（会被当成名为 `skills` 的单一 skill）。
+**Important**: Each path must be either a **skill directory** or its **`SKILL.md`** file. Passing the parent `skills/` directory itself will treat it as a single skill named `skills`, which is almost never what you want.
 
-### 选项
+### Options
 
-| 选项 | 说明 |
-|------|------|
-| `-q`, `--quiet` | 只打印总分，不展开各检查项详情 |
-| `-j`, `--json` | 输出 JSON（多 skill 为数组，单 skill 为单个对象） |
-| `--csv` [文件] | 输出 CSV。不写文件路径则输出到 stdout；写路径则保存到该文件 |
-| `--figure` [文件] | **仅当评价一个 skill 时** 生成雷达图。不写路径则保存为 `<skill_name>_radar.png`；写路径则保存到该文件（需安装 matplotlib） |
+| Option | Description |
+|--------|-------------|
+| `-q`, `--quiet` | Print only the total score for each skill. |
+| `-j`, `--json` | Print JSON output (single object for one skill, array for multiple). |
+| `--csv` [file] | Emit CSV. Without a path, CSV is written to stdout; with a path, CSV is saved to that file. |
+| `--figure` [file] | Generate a radar chart PNG for **one** skill only. Without a path, saves as `<skill_name>_radar.png`; with a path, saves to that file. Requires `matplotlib`. |
 
 ---
 
-## 使用示例
+## Examples
 
 ```bash
-# 评价单个 skill，打印完整报告
+# Score a single skill with a full verbose report
 python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database
 
-# 评价单个 skill，只显示总分
+# Score a single skill and print only the total score
 python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -q
 
-# 评价单个 skill 并生成雷达图（默认保存为 <skill_name>_radar.png）
+# Score a single skill and generate a radar chart (default <skill_name>_radar.png)
 python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure
 
-# 评价单个 skill 并指定雷达图输出路径
+# Score a single skill and save the radar chart to a custom file
 python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database --figure report/radar.png
 
-# 批量评价 skills 目录下所有 skill
+# Batch‑score all skills under skills/
 python skills/skill-metric/scripts/skill_quality_eval.py skills/*/
 
-# 批量评价并输出 CSV（写入文件）
+# Batch‑score and write CSV to a file
 python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ --csv skill_scores.csv
 
-# 批量评价并输出 CSV 到 stdout（可重定向）
+# Batch‑score and emit CSV to stdout (can be redirected)
 python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ --csv > report.csv
 
-# 输出 JSON
+# JSON output
 python skills/skill-metric/scripts/skill_quality_eval.py skills/uniprot-database -j
 python skills/skill-metric/scripts/skill_quality_eval.py skills/*/ -j
 ```
 
 ---
 
-## 评分体系总览（24 分）
+## Scoring Overview (24 Points Total)
 
-完整评分细则见 `skills/skill-metric/references/scoring_criteria.md`，这里给出总览：
+For full details see `skills/skill-metric/references/scoring_criteria.md`.  
+This section summarizes the rubric:
 
-| 维度 | 检查内容（摘要） | 满分 |
-|------|------------------|------|
-| **2.1.1 Format** | SKILL.md 是否存在且命名正确、目录名规则、YAML frontmatter、`name`/`description` 字段合法性等；每违反一项 -1 | 8 |
-| **2.1.2 Completeness** | `license`、`compatibility`、`metadata` 是否填写，是否有 `scripts/`、`references/`、`assets/`，是否提供示例与错误处理说明；每满足一项 +1 | 8 |
-| **2.1.3 Writing** | 是否有清晰的任务边界与触发条件、是否采用渐进式披露（正文 ≤ 5000 字符）、是否主要为英文、正文与目录引用是否一致、license 是否非占位、是否有版本信息等；每满足一项 +1 | 8 |
-
----
-
-## 输出说明
-
-### 文本报告（默认）
-
-- 每个 skill 一段：技能名、路径、Format / Completeness / Writing 分数与总分。
-- 若未使用 `-q`，会列出每条检查项的 ✓/✗ 以及对应说明，便于定位问题。
-
-### JSON（`-j`）
-
-- 单 skill：一个对象，包含 `skill_name`、`skill_dir`、`format_score`、`completeness_score`、`writing_score`、`total_score`，以及 `details`（按 format/completeness/writing 分类列出每条检查的 pass 与 message）。
-- 多 skill：上述对象的数组，方便在其他程序中做进一步统计与可视化。
-
-### CSV（`--csv`）
-
-- **列**：`skill_name`、`skill_dir`（相对当前工作目录）、`format_score`、`completeness_score`、`writing_score`、`total_score`、`error`，以及 `format_1`…`format_8`、`completeness_1`…`completeness_8`、`writing_1`…`writing_8`（每条为 `PASS: 说明` 或 `FAIL: 说明`）。
-- 一行一个 skill，适合在 Excel、数据仓库或其他分析脚本中做聚合和筛选。
-
-### 雷达图（`--figure`）
-
-- 仅在**评价一个 skill** 且该 skill 评价成功时生成。
-- 三个轴：Format (2.1.1)、Completeness (2.1.2)、Writing (2.1.3)，刻度范围 0–8；标题会显示技能名和总分。
-- 多 skill 场景下使用 `--figure` 会提示仅支持单 skill。
+| Dimension | What is checked (summary) | Max |
+|----------|---------------------------|-----|
+| **2.1.1 Format** | `SKILL.md` existence and exact name, directory naming rules, YAML frontmatter, `name`/`description` presence and validity, description length and no XML tags; one point deducted per violation. | 8 |
+| **2.1.2 Completeness** | Presence of `license`, `compatibility`, `metadata`; existence of non‑empty `scripts/`, `references/`, `assets/` dirs; code examples; error‑handling guidance; one point awarded per satisfied item. | 8 |
+| **2.1.3 Writing** | Clear task boundary and trigger, progressive disclosure (body ≤ 5000 chars), English‑first content, consistency between body references and actual files, non‑placeholder license, version information, etc.; one point awarded per satisfied item. | 8 |
 
 ---
 
-## 从 Python 调用
+## Output Formats
 
-当你在 Python 里用 `subprocess` 调用该脚本时，需要注意 **shell 通配符不会自动展开**，需要先用 `glob.glob()` 展开：
+### Text report (default)
+
+- One section per skill, showing: skill name, path, Format / Completeness / Writing scores, and total score.
+- Unless `-q` is used, each individual check is listed with ✓/✗ and an explanatory message, making it easy to see where the skill fails the rubric.
+
+### JSON (`-j`)
+
+- **Single skill**: A JSON object containing `skill_name`, `skill_dir`, `format_score`, `completeness_score`, `writing_score`, `total_score`, and a `details` object grouping per‑check results under `format`, `completeness`, and `writing`.
+- **Multiple skills**: An array of such objects, convenient for downstream processing and visualization.
+
+### CSV (`--csv`)
+
+- **Columns**: `skill_name`, `skill_dir` (relative to the current working directory), `format_score`, `completeness_score`, `writing_score`, `total_score`, `error`, plus `format_1`…`format_8`, `completeness_1`…`completeness_8`, `writing_1`…`writing_8`.
+- Each per‑check column contains `PASS: <message>` or `FAIL: <message>`.  
+  This makes it easy to filter, aggregate, or pivot on particular checks in tools like Excel or data warehouses.
+
+### Radar chart (`--figure`)
+
+- Only generated when **exactly one skill** is evaluated and that skill completes without errors.
+- The chart has three axes — Format (2.1.1), Completeness (2.1.2), Writing (2.1.3) — each on a 0–8 scale.  
+  The title includes the skill name and total score.
+- When multiple skills are passed together with `--figure`, the script prints a message indicating that radar charts are supported for single‑skill evaluation only.
+
+---
+
+## Calling from Python
+
+When invoking the script from Python, remember that **shell glob patterns are not expanded** if you pass a list to `subprocess`. Use `glob.glob()` first:
 
 ```python
 import glob
 import json
 import subprocess
 
-# 批量评分，输出 CSV
+# Batch‑score all skills and write CSV
 skill_dirs = sorted(glob.glob("skills/*/"))
 subprocess.run(
     ["python", "skills/skill-metric/scripts/skill_quality_eval.py"]
@@ -143,7 +147,7 @@ subprocess.run(
     check=True,
 )
 
-# 单个 skill，解析 JSON 结果
+# Score a single skill and parse JSON output
 result = subprocess.run(
     ["python", "skills/skill-metric/scripts/skill_quality_eval.py",
      "skills/uniprot-database", "-j"],
@@ -153,13 +157,14 @@ data = json.loads(result.stdout)
 print(data["total_score"])
 ```
 
-更多 Python 调用示例和输出字段定义可参考 `skills/skill-metric/references/scoring_criteria.md`。
+For more Python examples and a precise description of all fields, see `skills/skill-metric/references/scoring_criteria.md`.
 
 ---
 
-## 注意事项与排错
+## Notes and Troubleshooting
 
-- **路径必须是 skill 目录或 SKILL.md**：传入 `skills/` 这类父目录会被当作一个名为 `skills` 的 skill，通常不符合预期。
-- **CSV 中的 `skill_dir`** 是**相对当前工作目录**的路径，注意在不同工作目录下运行会影响该字段。
-- 同时使用 `--csv` 和 `-j` 时，**只会输出 CSV，不会输出 JSON**。
-- `--figure` 仅支持单个 skill 且需要 `matplotlib`，否则会报错或被忽略。
+- **Valid paths only**: Each path must be a skill directory or its `SKILL.md`. Passing the parent `skills/` directory will treat it as a single skill called `skills`.
+- **Relative `skill_dir` in CSV**: The `skill_dir` column in CSV is **relative to the current working directory**, so running the tool from different locations will change this value.
+- **`--csv` vs `-j`**: If both `--csv` and `-j` are provided, only CSV is emitted (JSON is suppressed).
+- **Radar chart requirements**: `--figure` is supported for one skill at a time and requires `matplotlib`; otherwise, the option may be ignored or an error message will be shown.
+
