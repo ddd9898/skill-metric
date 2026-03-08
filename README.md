@@ -1,4 +1,10 @@
+[中文版](README(Chinese).md) | [English](README.md)
+
 ## Skill Metric — Static Quality Evaluation for Skills
+
+This skill’s evaluation criteria are derived from the official Anthropic guide [*The Complete Guide to Building Skills for Claude*](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf).
+
+---
 
 `skill-metric` is a utility skill that runs **static quality checks** on agent skills.  
 It scores each target skill directory on three dimensions:
@@ -99,6 +105,41 @@ This section summarizes the rubric:
 | **2.1.1 Format** | `SKILL.md` existence and exact name, directory naming rules, YAML frontmatter, `name`/`description` presence and validity, description length and no XML tags; one point deducted per violation. | 8 |
 | **2.1.2 Completeness** | Presence of `license`, `compatibility`, `metadata`; existence of non‑empty `scripts/`, `references/`, `assets/` dirs; code examples; error‑handling guidance; one point awarded per satisfied item. | 8 |
 | **2.1.3 Writing** | Clear task boundary and trigger, progressive disclosure (body ≤ 5000 chars), English‑first content, consistency between body references and actual files, non‑placeholder license, version information, etc.; one point awarded per satisfied item. | 8 |
+
+### Key scoring criteria
+
+**2.1.1 Format (8 pts max; −1 per violation)**
+
+1. `[skill_name]/SKILL.md` must exist and be named exactly `SKILL.md` (not `skill.md`, `SKILL.MD`, etc.).
+2. `[skill_name]` must use kebab-case: no spaces, no underscores (e.g. `notion-project-setup` ✓, `NotionProjectSetup` ✗).
+3. Do not include `README.md` inside the skill directory.
+4. `SKILL.md` must have YAML frontmatter delimited by `---`.
+5. Frontmatter must include `name` matching the directory name exactly.
+6. Frontmatter must include `description` stating (a) what the skill does, (b) when to use it.
+7. `description` must be under 1024 characters.
+8. `description` must not contain XML tags (e.g. `<a>`).
+
+**2.1.2 Completeness (0 base; +1 per satisfied item)**
+
+1. Has `license` field?
+2. Has `compatibility` field (≤500 chars for environment requirements)?
+3. Has `metadata` field (author, version, etc.)?
+4. Has `[skill_name]/scripts/` with at least one file?
+5. Has `[skill_name]/references/` with at least one file?
+6. Has `[skill_name]/assets/` with at least one file?
+7. Does the body provide concrete examples (e.g. code blocks or example paragraphs)?
+8. Does the body describe error/exception handling?
+
+**2.1.3 Writing (0 base; +1 per satisfied item)**
+
+1. Does `description` have a clear task boundary? (e.g. “Analyzes Figma design files and generates developer handoff documentation.” ✓ vs “Helps with projects.” ✗)
+2. Does `description` have clear trigger phrasing? (e.g. “Use when user uploads .fig files.”)
+3. Progressive disclosure: `SKILL.md` body ≤5000 chars; details in `references/`, runnable code in `scripts/`.
+4. Is the content primarily in English?
+5. Reference consistency: every `references/` or `scripts/` path mentioned in the body points to an existing file?
+6. Reverse consistency: if `references/` or `scripts/` exist, does the body reference at least one file in them?
+7. Is `license` non-placeholder? (exclude "Unknown", empty, "N/A", etc.)
+8. Is version information present? (in frontmatter or body, e.g. “Biopython 1.85”)
 
 ---
 

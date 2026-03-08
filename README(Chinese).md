@@ -1,4 +1,10 @@
+[中文](README(Chinese).md) | [English](README.md)
+
 # Skill Metric — Skill 质量评价工具
+
+本 skill 的评价指标依据 Anthropic 官方文档 [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) 所总结。
+
+---
 
 `skill-metric` 是一个对 Agent Skill 做**静态质量评价**的工具 Skill，会对指定的 skill 目录打出三项得分：
 
@@ -97,6 +103,41 @@ python skill-metric/scripts/skill_quality_eval.py skills/*/ -j
 | **2.1.1 Format** | SKILL.md 是否存在且命名正确、目录名规则、YAML frontmatter、`name`/`description` 字段合法性等；每违反一项 -1 | 8 |
 | **2.1.2 Completeness** | `license`、`compatibility`、`metadata` 是否填写，是否有 `scripts/`、`references/`、`assets/`，是否提供示例与错误处理说明；每满足一项 +1 | 8 |
 | **2.1.3 Writing** | 是否有清晰的任务边界与触发条件、是否采用渐进式披露（正文 ≤ 5000 字符）、是否主要为英文、正文与目录引用是否一致、license 是否非占位、是否有版本信息等；每满足一项 +1 | 8 |
+
+### 关键打分细则
+
+**2.1.1 格式审查（满分 8 分，每违反一项扣 1 分）**
+
+1. 必须有 `[skill_name]/SKILL.md` 文件，且必须命名为 `SKILL.md`（`skill.md`、`SKILL.MD` 等均不合格）。
+2. `[skill_name]` 目录名不得包含空格、下划线；单词间用连字符，如 `notion-project-setup` ✓，`NotionProjectSetup` ✗。
+3. `[skill_name]/` 内不要有 `README.md` 文件。
+4. `SKILL.md` 内必须有 YAML frontmatter，且用 `---` 分隔。
+5. frontmatter 必须包含 `name` 字段，且与目录名 `[skill_name]` 完全一致。
+6. frontmatter 必须包含 `description` 字段，说明：a) 该 skill 做什么（what），b) 什么时候用（when）。
+7. `description` 字段长度须少于 1024 字符。
+8. `description` 字段不得包含 XML 标签（如 `<a>`）。
+
+**2.1.2 内容完整性（基础分 0 分，每满足一项加 1 分）**
+
+1. 是否有 `license` 字段？
+2. 是否有 `compatibility` 字段（≤500 字符描述环境要求）？
+3. 是否有 `metadata` 字段（作者、版本等）？
+4. 是否有 `[skill_name]/scripts/` 子目录（且含至少一个文件）？
+5. 是否有 `[skill_name]/references/` 子目录（且含至少一个文件）？
+6. 是否有 `[skill_name]/assets/` 子目录（且含至少一个文件）？
+7. `SKILL.md` 正文是否提供具体案例（如代码块或示例段落）？
+8. `SKILL.md` 正文是否说明错误/异常处理方式？
+
+**2.1.3 写作质量（基础分 0 分，每满足一项加 1 分）**
+
+1. `description` 是否有明确任务边界？（如 “Analyzes Figma design files and generates developer handoff documentation.” ✓，“Helps with projects.” ✗）
+2. `description` 是否有明确触发信号？（如 “Use when user uploads .fig files.”）
+3. 是否实现渐进式披露：`SKILL.md` 正文 ≤5000 字，细节放在 `references/`，可执行代码放在 `scripts/`。
+4. 主要内容是否以英文为主？
+5. 引用与目录一致：正文中出现的 `references/` 或 `scripts/` 路径，对应文件是否存在？
+6. 反向一致：若存在 `references/` 或 `scripts/` 目录，正文是否至少引用其中 1 个文件？
+7. `license` 是否为非占位值？（排除 "Unknown"、空、"N/A" 等）
+8. 是否有版本信息？（frontmatter 或正文中的库/数据版本，如 “Biopython 1.85”）
 
 ---
 
